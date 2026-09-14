@@ -12,6 +12,7 @@
     <!-- Application identity -->
     <AssemblyName>ControllerHub</AssemblyName>
     <RootNamespace>ControllerHub.App</RootNamespace>
+    <ApplicationIcon>controllerhub.ico</ApplicationIcon>
     <Product>ControllerHub</Product>
     <Company>ControllerHub</Company>
     <Description>Turn your phone into a game controller.</Description>

@@ -1,42 +1,107 @@
-# ================================
-# .NET
-# ================================
-bin/
-obj/
+# ============================================================
+# ControllerHub
+# ============================================================
+
+# ------------------------------------------------------------
+# .NET / Visual Studio
+# ------------------------------------------------------------
+
+[Bb]in/
+[Oo]bj/
 .vs/
+.vscode/
+.idea/
+
 *.user
 *.suo
+*.userosscache
+*.sln.docstates
 
-# ================================
-# Flutter
-# ================================
+# Visual Studio Code
+*.code-workspace
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+
+# Build output
+publish/
+dist/
+releases/
+
+# ------------------------------------------------------------
+# Flutter / Dart
+# ------------------------------------------------------------
+
 controllerhub_mobile/.dart_tool/
 controllerhub_mobile/build/
+
 controllerhub_mobile/.flutter-plugins
 controllerhub_mobile/.flutter-plugins-dependencies
 controllerhub_mobile/.packages
 
-# ================================
-# Android
-# ================================
+# Flutter generated files
 controllerhub_mobile/android/.gradle/
 controllerhub_mobile/android/local.properties
+
+# Android generated files
+controllerhub_mobile/android/app/build/
+controllerhub_mobile/android/build/
+controllerhub_mobile/android/.cxx/
+
+# Android signing
 controllerhub_mobile/android/key.properties
+controllerhub_mobile/android/*.jks
+controllerhub_mobile/android/*.keystore
 
-# ================================
-# IDE
-# ================================
-.idea/
-.vscode/
+# iOS generated files
+controllerhub_mobile/ios/Pods/
+controllerhub_mobile/ios/.symlinks/
+controllerhub_mobile/ios/Flutter/ephemeral/
+controllerhub_mobile/ios/Flutter/Generated.xcconfig
+controllerhub_mobile/ios/Flutter/flutter_export_environment.sh
 
-# ================================
-# Generated releases
-# ================================
-releases/
-dist/
+# ------------------------------------------------------------
+# Logs / temporary files
+# ------------------------------------------------------------
 
-# ================================
-# OS
-# ================================
+*.log
+*.tmp
+*.temp
+
+# ------------------------------------------------------------
+# Operating system
+# ------------------------------------------------------------
+
 Thumbs.db
+Desktop.ini
 .DS_Store
+
+# ------------------------------------------------------------
+# Test / coverage output
+# ------------------------------------------------------------
+
+coverage/
+TestResults/
+
+# ------------------------------------------------------------
+# Local environment / secrets
+# ------------------------------------------------------------
+
+.env
+.env.*
+!.env.example
+
+# ------------------------------------------------------------
+# Release binaries
+# ------------------------------------------------------------
+
+*.apk
+*.aab
+
+# Don't commit locally generated Windows release binaries
+ControllerHub.exe
+ControllerHub-Setup*.exe
+# Third-party installer payload
+installer/payload/

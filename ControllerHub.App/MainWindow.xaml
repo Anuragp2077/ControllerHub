@@ -1,0 +1,781 @@
+<Window x:Class="ControllerHub.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ControllerHub"
+        Width="1000"
+        Height="760"
+        MinWidth="800"
+        MinHeight="600"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+
+        <!-- ========================================================= -->
+        <!-- HEADER -->
+        <!-- ========================================================= -->
+
+        <Grid Grid.Row="0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel>
+
+                <TextBlock
+                    Text="ControllerHub"
+                    FontSize="32"
+                    FontWeight="Bold"/>
+
+                <TextBlock
+                    Text="Phone-to-PC virtual controller"
+                    FontSize="14"
+                    Opacity="0.65"
+                    Margin="0,4,0,0"/>
+
+            </StackPanel>
+
+            <Border
+                Grid.Column="1"
+                Padding="14,8"
+                CornerRadius="8"
+                BorderBrush="Gray"
+                BorderThickness="1">
+
+                <StackPanel
+                    Orientation="Horizontal">
+
+                    <Ellipse
+                        x:Name="ServerStatusDot"
+                        Width="10"
+                        Height="10"
+                        Fill="Gray"
+                        Margin="0,0,8,0"/>
+
+                    <TextBlock
+                        x:Name="ServerStatusText"
+                        Text="Server Stopped"
+                        FontWeight="SemiBold"/>
+
+                </StackPanel>
+
+            </Border>
+
+        </Grid>
+
+
+        <!-- ========================================================= -->
+        <!-- SERVER INFORMATION -->
+        <!-- ========================================================= -->
+
+        <Border
+            Grid.Row="1"
+            Margin="0,24,0,12"
+            Padding="18"
+            CornerRadius="10"
+            BorderBrush="Gray"
+            BorderThickness="1">
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+
+                <!-- ADDRESS -->
+
+                <StackPanel Grid.Column="0">
+
+                    <TextBlock
+                        Text="SERVER ADDRESS"
+                        FontSize="11"
+                        FontWeight="SemiBold"
+                        Opacity="0.6"/>
+
+                    <TextBlock
+                        x:Name="ServerAddressText"
+                        Text="Port 8080"
+                        FontSize="17"
+                        Margin="0,5,0,0"/>
+
+                </StackPanel>
+
+
+                <!-- CONNECTIONS -->
+
+                <StackPanel Grid.Column="1">
+
+                    <TextBlock
+                        Text="CONNECTIONS"
+                        FontSize="11"
+                        FontWeight="SemiBold"
+                        Opacity="0.6"/>
+
+                    <TextBlock
+                        x:Name="ConnectionsText"
+                        Text="0 / 4"
+                        FontSize="17"
+                        Margin="0,5,0,0"/>
+
+                </StackPanel>
+
+
+                <!-- PROTOCOL -->
+
+                <StackPanel Grid.Column="2">
+
+                    <TextBlock
+                        Text="PROTOCOL"
+                        FontSize="11"
+                        FontWeight="SemiBold"
+                        Opacity="0.6"/>
+
+                    <TextBlock
+                        Text="v1"
+                        FontSize="17"
+                        Margin="0,5,0,0"/>
+
+                </StackPanel>
+
+            </Grid>
+
+        </Border>
+
+
+        <!-- ========================================================= -->
+        <!-- PHONE PAIRING -->
+        <!-- ========================================================= -->
+
+        <Border
+            x:Name="PairingPanel"
+            Grid.Row="2"
+            Background="#181818"
+            BorderBrush="#303030"
+            BorderThickness="1"
+            CornerRadius="12"
+            Padding="20"
+            Margin="0,0,0,12">
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+
+                    <ColumnDefinition
+                        Width="Auto"/>
+
+                    <ColumnDefinition
+                        Width="*"/>
+
+                </Grid.ColumnDefinitions>
+
+
+                <!-- QR CODE -->
+
+                <Border
+                    Grid.Column="0"
+                    Width="190"
+                    Height="190"
+                    Background="White"
+                    CornerRadius="8"
+                    Padding="10">
+
+                    <Image
+                        x:Name="PairingQrImage"
+                        Stretch="Uniform"/>
+
+                </Border>
+
+
+                <!-- PAIRING INFORMATION -->
+
+                <StackPanel
+                    Grid.Column="1"
+                    Margin="24,0,0,0"
+                    VerticalAlignment="Center">
+
+                    <TextBlock
+                        Text="Connect Phone"
+                        FontSize="20"
+                        FontWeight="SemiBold"
+                        Foreground="White"/>
+
+                    <TextBlock
+                        Text="Scan this QR code with the ControllerHub mobile app."
+                        Margin="0,8,0,16"
+                        FontSize="13"
+                        Foreground="#AAAAAA"
+                        TextWrapping="Wrap"/>
+
+                    <TextBlock
+                        x:Name="PairingStatusText"
+                        Text="No active pairing code."
+                        FontSize="14"
+                        Foreground="#DDDDDD"
+                        TextWrapping="Wrap"/>
+
+                    <TextBlock
+                        x:Name="PairingAddressText"
+                        Text="--"
+                        Margin="0,6,0,0"
+                        FontSize="13"
+                        Foreground="#888888"/>
+
+                    <TextBlock
+                        x:Name="PairingExpirationText"
+                        Text="Generate a pairing code to connect a phone."
+                        Margin="0,6,0,18"
+                        FontSize="12"
+                        Foreground="#777777"
+                        TextWrapping="Wrap"/>
+
+                    <Button
+                        x:Name="PairButton"
+                        Content="Generate Pairing Code"
+                        Click="PairButton_Click"
+                        Width="190"
+                        Height="38"
+                        HorizontalAlignment="Left"/>
+
+                </StackPanel>
+
+            </Grid>
+
+        </Border>
+
+
+        <!-- ========================================================= -->
+        <!-- CONTROLLERS -->
+        <!-- ========================================================= -->
+
+        <ScrollViewer
+            Grid.Row="3"
+            VerticalScrollBarVisibility="Auto">
+
+            <StackPanel>
+
+                <TextBlock
+                    Text="Controllers"
+                    FontSize="20"
+                    FontWeight="SemiBold"
+                    Margin="0,0,0,12"/>
+
+
+                <!-- ================================================= -->
+                <!-- SLOT 1 -->
+                <!-- ================================================= -->
+
+                <Border
+                    Padding="18"
+                    Margin="0,0,0,12"
+                    CornerRadius="10"
+                    BorderBrush="Gray"
+                    BorderThickness="1">
+
+                    <Grid>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel>
+
+                            <TextBlock
+                                Text="Controller 1"
+                                FontSize="17"
+                                FontWeight="SemiBold"/>
+
+                            <TextBlock
+                                x:Name="Slot1ClientText"
+                                Text="Available"
+                                Margin="0,5,0,0"
+                                Opacity="0.6"/>
+
+                            <Grid
+                                x:Name="Slot1DetailsPanel"
+                                Margin="0,12,0,0">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock
+                                    Text="Client ID"
+                                    FontSize="11"
+                                    Opacity="0.55"
+                                    Margin="0,0,20,5"/>
+
+                                <TextBlock
+                                    x:Name="Slot1ClientIdText"
+                                    Grid.Column="1"
+                                    Text="--"
+                                    FontSize="12"
+                                    Margin="0,0,0,5"/>
+
+                                <TextBlock
+                                    Text="IP Address"
+                                    Grid.Row="1"
+                                    FontSize="11"
+                                    Opacity="0.55"
+                                    Margin="0,0,20,5"/>
+
+                                <TextBlock
+                                    x:Name="Slot1IpText"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Text="--"
+                                    FontSize="12"
+                                    Margin="0,0,0,5"/>
+
+                                <TextBlock
+                                    Text="Connected"
+                                    Grid.Row="2"
+                                    FontSize="11"
+                                    Opacity="0.55"
+                                    Margin="0,0,20,0"/>
+
+                                <TextBlock
+                                    x:Name="Slot1ConnectedAtText"
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Text="--"
+                                    FontSize="12"/>
+
+                            </Grid>
+
+                            <TextBlock
+                                x:Name="Slot1HeartbeatText"
+                                Text="Heartbeat: --"
+                                FontSize="11"
+                                Opacity="0.5"
+                                Margin="0,8,0,0"/>
+
+                        </StackPanel>
+
+                        <Border
+                            Grid.Column="1"
+                            Padding="12,6"
+                            CornerRadius="6"
+                            BorderBrush="Gray"
+                            BorderThickness="1"
+                            VerticalAlignment="Top">
+
+                            <TextBlock
+                                x:Name="Slot1StatusText"
+                                Text="Disconnected"/>
+
+                        </Border>
+
+                    </Grid>
+
+                </Border>
+
+
+                <!-- ================================================= -->
+                <!-- SLOT 2 -->
+                <!-- ================================================= -->
+
+                <Border
+                    Padding="18"
+                    Margin="0,0,0,12"
+                    CornerRadius="10"
+                    BorderBrush="Gray"
+                    BorderThickness="1">
+
+                    <Grid>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel>
+
+                            <TextBlock
+                                Text="Controller 2"
+                                FontSize="17"
+                                FontWeight="SemiBold"/>
+
+                            <TextBlock
+                                x:Name="Slot2ClientText"
+                                Text="Available"
+                                Margin="0,5,0,0"
+                                Opacity="0.6"/>
+
+                            <Grid
+                                Margin="0,12,0,0">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock
+                                    Text="Client ID"
+                                    FontSize="11"
+                                    Opacity="0.55"
+                                    Margin="0,0,20,5"/>
+
+                                <TextBlock
+                                    x:Name="Slot2ClientIdText"
+                                    Grid.Column="1"
+                                    Text="--"
+                                    FontSize="12"
+                                    Margin="0,0,0,5"/>
+
+                                <TextBlock
+                                    Text="IP Address"
+                                    Grid.Row="1"
+                                    FontSize="11"
+                                    Opacity="0.55"
+                                    Margin="0,0,20,5"/>
+
+                                <TextBlock
+                                    x:Name="Slot2IpText"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Text="--"
+                                    FontSize="12"
+                                    Margin="0,0,0,5"/>
+
+                                <TextBlock
+                                    Text="Connected"
+                                    Grid.Row="2"
+                                    FontSize="11"
+                                    Opacity="0.55"
+                                    Margin="0,0,20,0"/>
+
+                                <TextBlock
+                                    x:Name="Slot2ConnectedAtText"
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Text="--"
+                                    FontSize="12"/>
+
+                            </Grid>
+
+                            <TextBlock
+                                x:Name="Slot2HeartbeatText"
+                                Text="Heartbeat: --"
+                                FontSize="11"
+                                Opacity="0.5"
+                                Margin="0,8,0,0"/>
+
+                        </StackPanel>
+
+                        <Border
+                            Grid.Column="1"
+                            Padding="12,6"
+                            CornerRadius="6"
+                            BorderBrush="Gray"
+                            BorderThickness="1"
+                            VerticalAlignment="Top">
+
+                            <TextBlock
+                                x:Name="Slot2StatusText"
+                                Text="Disconnected"/>
+
+                        </Border>
+
+                    </Grid>
+
+                </Border>
+
+
+                <!-- ================================================= -->
+                <!-- SLOT 3 -->
+                <!-- ================================================= -->
+
+                <Border
+                    Padding="18"
+                    Margin="0,0,0,12"
+                    CornerRadius="10"
+                    BorderBrush="Gray"
+                    BorderThickness="1">
+
+                    <Grid>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel>
+
+                            <TextBlock
+                                Text="Controller 3"
+                                FontSize="17"
+                                FontWeight="SemiBold"/>
+
+                            <TextBlock
+                                x:Name="Slot3ClientText"
+                                Text="Available"
+                                Margin="0,5,0,0"
+                                Opacity="0.6"/>
+
+                            <Grid
+                                Margin="0,12,0,0">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock
+                                    Text="Client ID"
+                                    FontSize="11"
+                                    Opacity="0.55"
+                                    Margin="0,0,20,5"/>
+
+                                <TextBlock
+                                    x:Name="Slot3ClientIdText"
+                                    Grid.Column="1"
+                                    Text="--"
+                                    FontSize="12"
+                                    Margin="0,0,0,5"/>
+
+                                <TextBlock
+                                    Text="IP Address"
+                                    Grid.Row="1"
+                                    FontSize="11"
+                                    Opacity="0.55"
+                                    Margin="0,0,20,5"/>
+
+                                <TextBlock
+                                    x:Name="Slot3IpText"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Text="--"
+                                    FontSize="12"
+                                    Margin="0,0,0,5"/>
+
+                                <TextBlock
+                                    Text="Connected"
+                                    Grid.Row="2"
+                                    FontSize="11"
+                                    Opacity="0.55"
+                                    Margin="0,0,20,0"/>
+
+                                <TextBlock
+                                    x:Name="Slot3ConnectedAtText"
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Text="--"
+                                    FontSize="12"/>
+
+                            </Grid>
+
+                            <TextBlock
+                                x:Name="Slot3HeartbeatText"
+                                Text="Heartbeat: --"
+                                FontSize="11"
+                                Opacity="0.5"
+                                Margin="0,8,0,0"/>
+
+                        </StackPanel>
+
+                        <Border
+                            Grid.Column="1"
+                            Padding="12,6"
+                            CornerRadius="6"
+                            BorderBrush="Gray"
+                            BorderThickness="1"
+                            VerticalAlignment="Top">
+
+                            <TextBlock
+                                x:Name="Slot3StatusText"
+                                Text="Disconnected"/>
+
+                        </Border>
+
+                    </Grid>
+
+                </Border>
+
+
+                <!-- ================================================= -->
+                <!-- SLOT 4 -->
+                <!-- ================================================= -->
+
+                <Border
+                    Padding="18"
+                    Margin="0,0,0,12"
+                    CornerRadius="10"
+                    BorderBrush="Gray"
+                    BorderThickness="1">
+
+                    <Grid>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel>
+
+                            <TextBlock
+                                Text="Controller 4"
+                                FontSize="17"
+                                FontWeight="SemiBold"/>
+
+                            <TextBlock
+                                x:Name="Slot4ClientText"
+                                Text="Available"
+                                Margin="0,5,0,0"
+                                Opacity="0.6"/>
+
+                            <Grid
+                                Margin="0,12,0,0">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock
+                                    Text="Client ID"
+                                    FontSize="11"
+                                    Opacity="0.55"
+                                    Margin="0,0,20,5"/>
+
+                                <TextBlock
+                                    x:Name="Slot4ClientIdText"
+                                    Grid.Column="1"
+                                    Text="--"
+                                    FontSize="12"
+                                    Margin="0,0,0,5"/>
+
+                                <TextBlock
+                                    Text="IP Address"
+                                    Grid.Row="1"
+                                    FontSize="11"
+                                    Opacity="0.55"
+                                    Margin="0,0,20,5"/>
+
+                                <TextBlock
+                                    x:Name="Slot4IpText"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Text="--"
+                                    FontSize="12"
+                                    Margin="0,0,0,5"/>
+
+                                <TextBlock
+                                    Text="Connected"
+                                    Grid.Row="2"
+                                    FontSize="11"
+                                    Opacity="0.55"
+                                    Margin="0,0,20,0"/>
+
+                                <TextBlock
+                                    x:Name="Slot4ConnectedAtText"
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Text="--"
+                                    FontSize="12"/>
+
+                            </Grid>
+
+                            <TextBlock
+                                x:Name="Slot4HeartbeatText"
+                                Text="Heartbeat: --"
+                                FontSize="11"
+                                Opacity="0.5"
+                                Margin="0,8,0,0"/>
+
+                        </StackPanel>
+
+                        <Border
+                            Grid.Column="1"
+                            Padding="12,6"
+                            CornerRadius="6"
+                            BorderBrush="Gray"
+                            BorderThickness="1"
+                            VerticalAlignment="Top">
+
+                            <TextBlock
+                                x:Name="Slot4StatusText"
+                                Text="Disconnected"/>
+
+                        </Border>
+
+                    </Grid>
+
+                </Border>
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+
+        <!-- ========================================================= -->
+        <!-- FOOTER -->
+        <!-- ========================================================= -->
+
+        <Grid
+            Grid.Row="4"
+            Margin="0,18,0,0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                x:Name="FooterStatusText"
+                Text="Ready"
+                VerticalAlignment="Center"
+                Opacity="0.6"/>
+
+            <Button
+                x:Name="ServerButton"
+                Grid.Column="1"
+                Content="Start Server"
+                Width="140"
+                Height="40"
+                FontSize="14"
+                Click="ServerButton_Click"/>
+
+        </Grid>
+
+    </Grid>
+
+</Window>

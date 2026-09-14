@@ -1,0 +1,42 @@
+# ================================
+# .NET
+# ================================
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+# ================================
+# Flutter
+# ================================
+controllerhub_mobile/.dart_tool/
+controllerhub_mobile/build/
+controllerhub_mobile/.flutter-plugins
+controllerhub_mobile/.flutter-plugins-dependencies
+controllerhub_mobile/.packages
+
+# ================================
+# Android
+# ================================
+controllerhub_mobile/android/.gradle/
+controllerhub_mobile/android/local.properties
+controllerhub_mobile/android/key.properties
+
+# ================================
+# IDE
+# ================================
+.idea/
+.vscode/
+
+# ================================
+# Generated releases
+# ================================
+releases/
+dist/
+
+# ================================
+# OS
+# ================================
+Thumbs.db
+.DS_Store

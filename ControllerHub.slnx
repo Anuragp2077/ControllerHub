@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="ControllerHub.App/ControllerHub.App.csproj" />
+  <Project Path="ControllerHub.Core/ControllerHub.Core.csproj" />
+  <Project Path="ControllerHub.Server/ControllerHub.Server.csproj" />
+</Solution>

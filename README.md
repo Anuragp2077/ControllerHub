@@ -195,19 +195,22 @@ Screenshots will be added to the repository as the project documentation grows.
 
 ### Windows Dashboard
 
-<!-- Add screenshot here -->
+<img width="1920" height="1051" alt="image" src="https://github.com/user-attachments/assets/93a586e5-6414-4f12-8b48-92f6188190df" />
+
 
 <!-- Example: ![Windows Dashboard](docs/screenshots/windows-dashboard.png) -->
 
 ### Android Controller
 
-<!-- Add screenshot here -->
+<img width="2412" height="1080" alt="Screenshot_2026-09-15-00-47-09-94_85b7587881293b253572220c9b639389" src="https://github.com/user-attachments/assets/e09f4837-3a2c-47d1-9726-e1415755c141" />
+
 
 <!-- Example: ![Android Controller](docs/screenshots/android-controller.png) -->
 
 ### QR Pairing
 
-<!-- Add screenshot here -->
+<img width="1859" height="286" alt="image" src="https://github.com/user-attachments/assets/789c8798-8465-4262-bb0a-17bb3f5c72c1" />
+
 
 <!-- Example: ![QR Pairing](docs/screenshots/qr-pairing.png) -->
 

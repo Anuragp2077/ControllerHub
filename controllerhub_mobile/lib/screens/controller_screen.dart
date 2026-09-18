@@ -3,7 +3,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../models/controller_element.dart';
+import '../models/controller_layout.dart';
 import '../services/controllerhub_socket.dart';
+import '../services/layout_controller.dart';
+import '../widgets/layout_element.dart';
+import 'layout_editor_screen.dart';
 
 class ControllerScreen extends StatefulWidget {
   final ControllerHubSocket socket;
@@ -23,6 +28,17 @@ class ControllerScreen extends StatefulWidget {
 class _ControllerScreenState
     extends State<ControllerScreen> {
   // =============================================================
+  // LAYOUT
+  // =============================================================
+
+  final LayoutController _layoutController =
+      LayoutController();
+
+  ControllerLayout? _layout;
+
+  bool _layoutLoading = true;
+
+  // =============================================================
   // JOYSTICK SETTINGS
   // =============================================================
 
@@ -40,7 +56,6 @@ class _ControllerScreenState
   void initState() {
     super.initState();
 
-    // Controller is always landscape.
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
@@ -49,6 +64,21 @@ class _ControllerScreenState
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.immersiveSticky,
     );
+
+    _loadLayout();
+  }
+
+  Future<void> _loadLayout() async {
+    await _layoutController.load();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _layout = _layoutController.layout;
+      _layoutLoading = false;
+    });
   }
 
   // =============================================================
@@ -147,7 +177,6 @@ class _ControllerScreenState
       return;
     }
 
-    // Return to portrait.
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -163,6 +192,46 @@ class _ControllerScreenState
 
     Navigator.of(context).pop();
   }
+
+  // =============================================================
+  // CUSTOM LAYOUT EDITOR
+  // =============================================================
+
+  Future<void> _openLayoutEditor() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const LayoutEditorScreen(),
+      ),
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    // Reload the layout after returning from the editor.
+    await _layoutController.load();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _layout = _layoutController.layout;
+    });
+
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+
+    await SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.immersiveSticky,
+    );
+  }
+
+  // =============================================================
+  // GET ELEMENT
+  // =============================================================
 
   // =============================================================
   // SETTINGS
@@ -202,12 +271,10 @@ class _ControllerScreenState
                       height: 14,
                     ),
 
-                    // Drag handle
                     Container(
                       width: 48,
                       height: 5,
-                      decoration:
-                          BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Colors.white24,
                         borderRadius:
                             BorderRadius.circular(
@@ -220,7 +287,6 @@ class _ControllerScreenState
                       height: 22,
                     ),
 
-                    // Header
                     Padding(
                       padding:
                           const EdgeInsets.symmetric(
@@ -240,8 +306,7 @@ class _ControllerScreenState
                                   BoxShape.circle,
                             ),
                             child: const Icon(
-                              Icons
-                                  .settings_rounded,
+                              Icons.settings_rounded,
                               color: Color(
                                 0xFFE7E9ED,
                               ),
@@ -274,10 +339,6 @@ class _ControllerScreenState
                       height: 16,
                     ),
 
-                    // =================================================
-                    // SCROLLABLE SETTINGS
-                    // =================================================
-
                     Expanded(
                       child:
                           SingleChildScrollView(
@@ -292,6 +353,129 @@ class _ControllerScreenState
                         ),
                         child: Column(
                           children: [
+                            // =================================================
+                            // CUSTOM LAYOUT
+                            // =================================================
+
+                            _SettingsSection(
+                              title:
+                                  'Controller Layout',
+                              child: InkWell(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                  14,
+                                ),
+                                onTap: () {
+                                  Navigator.of(
+                                    sheetContext,
+                                  ).pop();
+
+                                  Future.delayed(
+                                    const Duration(
+                                      milliseconds: 180,
+                                    ),
+                                    () {
+                                      if (mounted) {
+                                        _openLayoutEditor();
+                                      }
+                                    },
+                                  );
+                                },
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets
+                                          .symmetric(
+                                    vertical: 4,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 46,
+                                        height: 46,
+                                        decoration:
+                                            BoxDecoration(
+                                          color:
+                                              const Color(
+                                            0xFF20242C,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius
+                                                  .circular(
+                                            13,
+                                          ),
+                                        ),
+                                        child:
+                                            const Icon(
+                                          Icons
+                                              .dashboard_customize_rounded,
+                                          color:
+                                              Color(
+                                            0xFFE7E9ED,
+                                          ),
+                                          size: 23,
+                                        ),
+                                      ),
+
+                                      const SizedBox(
+                                        width: 14,
+                                      ),
+
+                                      const Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Text(
+                                              'Custom Layout',
+                                              style:
+                                                  TextStyle(
+                                                color:
+                                                    Color(
+                                                  0xFFE8E9EC,
+                                                ),
+                                                fontSize:
+                                                    16,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .w600,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 3,
+                                            ),
+                                            Text(
+                                              'Move, resize and customize controls',
+                                              style:
+                                                  TextStyle(
+                                                color:
+                                                    Colors
+                                                        .white54,
+                                                fontSize:
+                                                    12,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      const Icon(
+                                        Icons
+                                            .chevron_right_rounded,
+                                        color:
+                                            Colors.white54,
+                                        size: 25,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(
+                              height: 16,
+                            ),
+
                             // =================================================
                             // LEFT STICK
                             // =================================================
@@ -465,10 +649,6 @@ class _ControllerScreenState
                               height: 16,
                             ),
 
-                            // =================================================
-                            // RESET
-                            // =================================================
-
                             SizedBox(
                               width:
                                   double.infinity,
@@ -518,8 +698,9 @@ class _ControllerScreenState
                               textAlign:
                                   TextAlign.center,
                               style: TextStyle(
-                                color: Colors.white
-                                    .withValues(
+                                color:
+                                    Colors.white
+                                        .withValues(
                                   alpha: 0.38,
                                 ),
                                 fontSize: 12,
@@ -540,6 +721,442 @@ class _ControllerScreenState
   }
 
   // =============================================================
+  // CONTROL BUILDER
+  // =============================================================
+
+  Widget _buildControl(
+    ControllerElement element,
+    double width,
+    double height,
+  ) {
+    final double elementWidth =
+        element.width * width;
+
+    final double elementHeight =
+        element.height * height;
+
+    switch (element.id) {
+      // ===========================================================
+      // LT
+      // ===========================================================
+
+      case 'lt':
+        return _ControllerButton(
+          label: 'LT',
+          width: elementWidth,
+          height: elementHeight,
+          fontSize: math.min(
+            elementWidth,
+            elementHeight,
+          ) *
+              0.28,
+          onDown: () {
+            _trigger(
+              'Left',
+              1,
+            );
+          },
+          onUp: () {
+            _trigger(
+              'Left',
+              0,
+            );
+          },
+        );
+
+      // ===========================================================
+      // LB
+      // ===========================================================
+
+      case 'lb':
+        return _ControllerButton(
+          label: 'LB',
+          width: elementWidth,
+          height: elementHeight,
+          fontSize: math.min(
+            elementWidth,
+            elementHeight,
+          ) *
+              0.28,
+          onDown: () {
+            _button(
+              'LeftBumper',
+              true,
+            );
+          },
+          onUp: () {
+            _button(
+              'LeftBumper',
+              false,
+            );
+          },
+        );
+
+      // ===========================================================
+      // RT
+      // ===========================================================
+
+      case 'rt':
+        return _ControllerButton(
+          label: 'RT',
+          width: elementWidth,
+          height: elementHeight,
+          fontSize: math.min(
+            elementWidth,
+            elementHeight,
+          ) *
+              0.28,
+          onDown: () {
+            _trigger(
+              'Right',
+              1,
+            );
+          },
+          onUp: () {
+            _trigger(
+              'Right',
+              0,
+            );
+          },
+        );
+
+      // ===========================================================
+      // RB
+      // ===========================================================
+
+      case 'rb':
+        return _ControllerButton(
+          label: 'RB',
+          width: elementWidth,
+          height: elementHeight,
+          fontSize: math.min(
+            elementWidth,
+            elementHeight,
+          ) *
+              0.28,
+          onDown: () {
+            _button(
+              'RightBumper',
+              true,
+            );
+          },
+          onUp: () {
+            _button(
+              'RightBumper',
+              false,
+            );
+          },
+        );
+
+      // ===========================================================
+      // LEFT STICK
+      // ===========================================================
+
+      case 'left_stick':
+        return Center(
+          child: SizedBox.square(
+            dimension: math.min(
+              elementWidth,
+              elementHeight,
+            ),
+            child: _AnalogStick(
+              size: math.min(
+                elementWidth,
+                elementHeight,
+              ),
+              label: 'LS',
+              onChanged: (
+                x,
+                y,
+              ) {
+                _stick(
+                  'Left',
+                  x,
+                  y,
+                );
+              },
+              onDoubleTap: () {
+                _stickClick(
+                  'LeftStick',
+                );
+              },
+            ),
+          ),
+        );
+
+      // ===========================================================
+      // RIGHT STICK
+      // ===========================================================
+
+      case 'right_stick':
+        return Center(
+          child: SizedBox.square(
+            dimension: math.min(
+              elementWidth,
+              elementHeight,
+            ),
+            child: _AnalogStick(
+              size: math.min(
+                elementWidth,
+                elementHeight,
+              ),
+              label: 'RS',
+              onChanged: (
+                x,
+                y,
+              ) {
+                _stick(
+                  'Right',
+                  x,
+                  y,
+                );
+              },
+              onDoubleTap: () {
+                _stickClick(
+                  'RightStick',
+                );
+              },
+            ),
+          ),
+        );
+
+      // ===========================================================
+      // D-PAD
+      // ===========================================================
+
+      case 'dpad':
+        return Center(
+          child: SizedBox.square(
+            dimension: math.min(
+              elementWidth,
+              elementHeight,
+            ),
+            child: _DPad(
+              size: math.min(
+                elementWidth,
+                elementHeight,
+              ),
+              onUp: (pressed) {
+                _button(
+                  'DPadUp',
+                  pressed,
+                );
+              },
+              onDown: (pressed) {
+                _button(
+                  'DPadDown',
+                  pressed,
+                );
+              },
+              onLeft: (pressed) {
+                _button(
+                  'DPadLeft',
+                  pressed,
+                );
+              },
+              onRight: (pressed) {
+                _button(
+                  'DPadRight',
+                  pressed,
+                );
+              },
+            ),
+          ),
+        );
+
+      // ===========================================================
+      // A
+      // ===========================================================
+
+      case 'a':
+        return _FaceButton(
+          label: 'A',
+          color: const Color(
+            0xFF43C95A,
+          ),
+          size: math.min(
+            elementWidth,
+            elementHeight,
+          ),
+          onDown: () {
+            _button(
+              'A',
+              true,
+            );
+          },
+          onUp: () {
+            _button(
+              'A',
+              false,
+            );
+          },
+        );
+
+      // ===========================================================
+      // B
+      // ===========================================================
+
+      case 'b':
+        return _FaceButton(
+          label: 'B',
+          color: const Color(
+            0xFFE72B2B,
+          ),
+          size: math.min(
+            elementWidth,
+            elementHeight,
+          ),
+          onDown: () {
+            _button(
+              'B',
+              true,
+            );
+          },
+          onUp: () {
+            _button(
+              'B',
+              false,
+            );
+          },
+        );
+
+      // ===========================================================
+      // X
+      // ===========================================================
+
+      case 'x':
+        return _FaceButton(
+          label: 'X',
+          color: const Color(
+            0xFF2796E8,
+          ),
+          size: math.min(
+            elementWidth,
+            elementHeight,
+          ),
+          onDown: () {
+            _button(
+              'X',
+              true,
+            );
+          },
+          onUp: () {
+            _button(
+              'X',
+              false,
+            );
+          },
+        );
+
+      // ===========================================================
+      // Y
+      // ===========================================================
+
+      case 'y':
+        return _FaceButton(
+          label: 'Y',
+          color: const Color(
+            0xFFFFD21C,
+          ),
+          size: math.min(
+            elementWidth,
+            elementHeight,
+          ),
+          onDown: () {
+            _button(
+              'Y',
+              true,
+            );
+          },
+          onUp: () {
+            _button(
+              'Y',
+              false,
+            );
+          },
+        );
+
+      // ===========================================================
+      // BACK
+      // ===========================================================
+
+      case 'back':
+        return _ControllerButton(
+          label: 'BACK',
+          width: elementWidth,
+          height: elementHeight,
+          fontSize: math.min(
+            elementWidth,
+            elementHeight,
+          ) *
+              0.23,
+          onDown: () {
+            _button(
+              'Back',
+              true,
+            );
+          },
+          onUp: () {
+            _button(
+              'Back',
+              false,
+            );
+          },
+        );
+
+      // ===========================================================
+      // START
+      // ===========================================================
+
+      case 'start':
+        return _ControllerButton(
+          label: 'START',
+          width: elementWidth,
+          height: elementHeight,
+          fontSize: math.min(
+            elementWidth,
+            elementHeight,
+          ) *
+              0.23,
+          onDown: () {
+            _button(
+              'Start',
+              true,
+            );
+          },
+          onUp: () {
+            _button(
+              'Start',
+              false,
+            );
+          },
+        );
+
+      // ===========================================================
+      // SETTINGS
+      // ===========================================================
+
+      case 'settings':
+        return Center(
+          child: _SettingsCenterButton(
+            size: math.min(
+              elementWidth,
+              elementHeight,
+            ),
+            onPressed: _showSettings,
+          ),
+        );
+
+      // ===========================================================
+      // UNKNOWN ELEMENT
+      // ===========================================================
+
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  // =============================================================
   // BUILD
   // =============================================================
 
@@ -547,9 +1164,21 @@ class _ControllerScreenState
   Widget build(
     BuildContext context,
   ) {
+    if (_layoutLoading || _layout == null) {
+      return const Scaffold(
+        backgroundColor: Color(0xFF050505),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
+      onPopInvokedWithResult: (
+        didPop,
+        result,
+      ) async {
         if (didPop) {
           return;
         }
@@ -559,423 +1188,133 @@ class _ControllerScreenState
       child: Scaffold(
         backgroundColor:
             const Color(0xFF050505),
-      body: LayoutBuilder(
-        builder: (
-          context,
-          constraints,
-        ) {
-          final double width =
-              constraints.maxWidth;
+        body: LayoutBuilder(
+          builder: (
+            context,
+            constraints,
+          ) {
+            final double width =
+                constraints.maxWidth;
 
-          final double height =
-              constraints.maxHeight;
+            final double height =
+                constraints.maxHeight;
 
-          return Stack(
-            children: [
-              const Positioned.fill(
-                child: ColoredBox(
-                  color: Color(0xFF050505),
+            return Stack(
+              children: [
+                const Positioned.fill(
+                  child: ColoredBox(
+                    color: Color(0xFF050505),
+                  ),
                 ),
-              ),
 
-              // ===================================================
-              // CONNECTION STATUS
-              // ===================================================
+                // ===================================================
+                // CONNECTION STATUS
+                // ===================================================
 
-              Positioned(
-                top: height * 0.028,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Row(
-                    mainAxisSize:
-                        MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration:
-                            BoxDecoration(
-                          color: widget
-                                  .socket
-                                  .isConnected
-                              ? const Color(
-                                  0xFF35D66F,
-                                )
-                              : const Color(
-                                  0xFF999999,
-                                ),
-                          shape:
-                              BoxShape.circle,
-                        ),
-                      ),
-
-                      const SizedBox(
-                        width: 12,
-                      ),
-
-                      Text(
-                        widget.socket
-                                .isConnected
-                            ? 'Connected'
-                            : 'Disconnected',
-                        style:
-                            const TextStyle(
-                          color: Color(
-                            0xFFE4E4E4,
+                Positioned(
+                  top: height * 0.028,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Row(
+                      mainAxisSize:
+                          MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 12,
+                          height: 12,
+                          decoration:
+                              BoxDecoration(
+                            color: widget
+                                    .socket
+                                    .isConnected
+                                ? const Color(
+                                    0xFF35D66F,
+                                  )
+                                : const Color(
+                                    0xFF999999,
+                                  ),
+                            shape:
+                                BoxShape.circle,
                           ),
-                          fontSize: 23,
-                          fontWeight:
-                              FontWeight.w400,
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
 
-              // ===================================================
-              // LEFT TRIGGERS
-              // ===================================================
+                        const SizedBox(
+                          width: 12,
+                        ),
 
-              Positioned(
-                left: width * 0.022,
-                top: height * 0.035,
-                child: Row(
-                  children: [
-                    _ControllerButton(
-                      label: 'LT',
-                      width:
-                          width * 0.110,
-                      height:
-                          height * 0.105,
-                      fontSize: 27,
-                      onDown: () =>
-                          _trigger(
-                        'Left',
-                        1,
-                      ),
-                      onUp: () =>
-                          _trigger(
-                        'Left',
-                        0,
-                      ),
-                    ),
-
-                    SizedBox(
-                      width:
-                          width * 0.010,
-                    ),
-
-                    _ControllerButton(
-                      label: 'LB',
-                      width:
-                          width * 0.102,
-                      height:
-                          height * 0.105,
-                      fontSize: 27,
-                      onDown: () =>
-                          _button(
-                        'LeftBumper',
-                        true,
-                      ),
-                      onUp: () =>
-                          _button(
-                        'LeftBumper',
-                        false,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // ===================================================
-              // RIGHT TRIGGERS
-              // ===================================================
-
-              Positioned(
-                right: width * 0.022,
-                top: height * 0.035,
-                child: Row(
-                  children: [
-                    _ControllerButton(
-                      label: 'RB',
-                      width:
-                          width * 0.102,
-                      height:
-                          height * 0.105,
-                      fontSize: 27,
-                      onDown: () =>
-                          _button(
-                        'RightBumper',
-                        true,
-                      ),
-                      onUp: () =>
-                          _button(
-                        'RightBumper',
-                        false,
-                      ),
-                    ),
-
-                    SizedBox(
-                      width:
-                          width * 0.010,
-                    ),
-
-                    _ControllerButton(
-                      label: 'RT',
-                      width:
-                          width * 0.110,
-                      height:
-                          height * 0.105,
-                      fontSize: 27,
-                      onDown: () =>
-                          _trigger(
-                        'Right',
-                        1,
-                      ),
-                      onUp: () =>
-                          _trigger(
-                        'Right',
-                        0,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // ===================================================
-              // LEFT STICK
-              // ===================================================
-
-              Positioned(
-                left: width * 0.067,
-                top: height * 0.150,
-                child: _AnalogStick(
-                  size: math.min(
-                    width * 0.145,
-                    height * 0.315,
-                  ),
-                  label: 'LS',
-                  onChanged: (
-                    x,
-                    y,
-                  ) {
-                    _stick(
-                      'Left',
-                      x,
-                      y,
-                    );
-                  },
-                  onDoubleTap: () {
-                    _stickClick(
-                      'LeftStick',
-                    );
-                  },
-                ),
-              ),
-
-              // ===================================================
-              // D-PAD
-              // ===================================================
-
-              Positioned(
-                left: width * 0.045,
-                bottom: height * 0.075,
-                child: _DPad(
-                  size: math.min(
-                    width * 0.190,
-                    height * 0.390,
-                  ),
-                  onUp: (pressed) =>
-                      _button(
-                    'DPadUp',
-                    pressed,
-                  ),
-                  onDown: (pressed) =>
-                      _button(
-                    'DPadDown',
-                    pressed,
-                  ),
-                  onLeft: (pressed) =>
-                      _button(
-                    'DPadLeft',
-                    pressed,
-                  ),
-                  onRight: (pressed) =>
-                      _button(
-                    'DPadRight',
-                    pressed,
-                  ),
-                ),
-              ),
-
-              // ===================================================
-              // CENTER BUTTONS
-              //
-              // BACK -> SETTINGS -> START
-              // ===================================================
-
-              Positioned(
-                top: height * 0.270,
-                left: 0,
-                right: 0,
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment
-                          .center,
-                  children: [
-                    _ControllerButton(
-                      label: 'BACK',
-                      width:
-                          width * 0.090,
-                      height:
-                          height * 0.105,
-                      fontSize: 21,
-                      onDown: () =>
-                          _button(
-                        'Back',
-                        true,
-                      ),
-                      onUp: () =>
-                          _button(
-                        'Back',
-                        false,
-                      ),
-                    ),
-
-                    SizedBox(
-                      width:
-                          width * 0.020,
-                    ),
-
-                    _SettingsCenterButton(
-                      size:
-                          height * 0.115,
-                      onPressed:
-                          _showSettings,
-                    ),
-
-                    SizedBox(
-                      width:
-                          width * 0.020,
-                    ),
-
-                    _ControllerButton(
-                      label: 'START',
-                      width:
-                          width * 0.090,
-                      height:
-                          height * 0.105,
-                      fontSize: 21,
-                      onDown: () =>
-                          _button(
-                        'Start',
-                        true,
-                      ),
-                      onUp: () =>
-                          _button(
-                        'Start',
-                        false,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // ===================================================
-              // RIGHT STICK
-              // ===================================================
-
-              Positioned(
-                left: width * 0.497,
-                top: height * 0.475,
-                child: _AnalogStick(
-                  size: math.min(
-                    width * 0.145,
-                    height * 0.315,
-                  ),
-                  label: 'RS',
-                  onChanged: (
-                    x,
-                    y,
-                  ) {
-                    _stick(
-                      'Right',
-                      x,
-                      y,
-                    );
-                  },
-                  onDoubleTap: () {
-                    _stickClick(
-                      'RightStick',
-                    );
-                  },
-                ),
-              ),
-
-              // ===================================================
-              // ABXY
-              // ===================================================
-
-              Positioned(
-                right: width * 0.065,
-                bottom: height * 0.060,
-                child: _FaceButtons(
-                  buttonSize: math.min(
-                    width * 0.100,
-                    height * 0.190,
-                  ),
-                  onA: (pressed) =>
-                      _button(
-                    'A',
-                    pressed,
-                  ),
-                  onB: (pressed) =>
-                      _button(
-                    'B',
-                    pressed,
-                  ),
-                  onX: (pressed) =>
-                      _button(
-                    'X',
-                    pressed,
-                  ),
-                  onY: (pressed) =>
-                      _button(
-                    'Y',
-                    pressed,
-                  ),
-                ),
-              ),
-
-              // ===================================================
-              // SLOT
-              // ===================================================
-
-              Positioned(
-                bottom: height * 0.012,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Text(
-                    'P${widget.slot}',
-                    style: TextStyle(
-                      color: Colors.white
-                          .withValues(
-                        alpha: 0.25,
-                      ),
-                      fontSize: 12,
-                      fontWeight:
-                          FontWeight.w500,
+                        Text(
+                          widget.socket
+                                  .isConnected
+                              ? 'Connected'
+                              : 'Disconnected',
+                          style:
+                              const TextStyle(
+                            color: Color(
+                              0xFFE4E4E4,
+                            ),
+                            fontSize: 23,
+                            fontWeight:
+                                FontWeight.w400,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
-      ),
+
+                // ===================================================
+                // CUSTOM LAYOUT
+                // ===================================================
+
+                ..._layout!.elements
+                    .where(
+                      (element) =>
+                          element.visible,
+                    )
+                    .map(
+                      (element) {
+                        return LayoutElement(
+                          element: element,
+                          containerWidth: width,
+                          containerHeight:
+                              height,
+                          child: _buildControl(
+                            element,
+                            width,
+                            height,
+                          ),
+                        );
+                      },
+                    ),
+
+                // ===================================================
+                // SLOT
+                // ===================================================
+
+                Positioned(
+                  bottom: height * 0.012,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Text(
+                      'P${widget.slot}',
+                      style: TextStyle(
+                        color: Colors.white
+                            .withValues(
+                          alpha: 0.25,
+                        ),
+                        fontSize: 12,
+                        fontWeight:
+                            FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -986,7 +1325,8 @@ class _ControllerScreenState
 
   @override
   void dispose() {
-    // Ensure the next screen is portrait.
+    _layoutController.dispose();
+
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -1453,7 +1793,6 @@ class _DPad
                   onUp(false),
             ),
           ),
-
           Positioned(
             left:
                 center - buttonSize / 2,
@@ -1468,7 +1807,6 @@ class _DPad
                   onDown(false),
             ),
           ),
-
           Positioned(
             left: 0,
             top:
@@ -1483,7 +1821,6 @@ class _DPad
                   onLeft(false),
             ),
           ),
-
           Positioned(
             right: 0,
             top:
@@ -1498,7 +1835,6 @@ class _DPad
                   onRight(false),
             ),
           ),
-
           Positioned(
             left:
                 center - buttonSize / 2,
@@ -1610,119 +1946,6 @@ class _DPadButtonState
           size:
               widget.size * 0.56,
         ),
-      ),
-    );
-  }
-}
-
-// =============================================================
-// FACE BUTTONS
-// =============================================================
-
-class _FaceButtons
-    extends StatelessWidget {
-  final double buttonSize;
-
-  final ValueChanged<bool> onA;
-  final ValueChanged<bool> onB;
-  final ValueChanged<bool> onX;
-  final ValueChanged<bool> onY;
-
-  const _FaceButtons({
-    required this.buttonSize,
-    required this.onA,
-    required this.onB,
-    required this.onX,
-    required this.onY,
-  });
-
-  @override
-  Widget build(
-    BuildContext context,
-  ) {
-    final double total =
-        buttonSize * 2.45;
-
-    final double center =
-        total / 2;
-
-    return SizedBox(
-      width: total,
-      height: total,
-      child: Stack(
-        children: [
-          // Y
-          Positioned(
-            left:
-                center - buttonSize / 2,
-            top: 0,
-            child: _FaceButton(
-              label: 'Y',
-              color: const Color(
-                0xFFFFD21C,
-              ),
-              size: buttonSize,
-              onDown: () =>
-                  onY(true),
-              onUp: () =>
-                  onY(false),
-            ),
-          ),
-
-          // B
-          Positioned(
-            right: 0,
-            top:
-                center - buttonSize / 2,
-            child: _FaceButton(
-              label: 'B',
-              color: const Color(
-                0xFFE72B2B,
-              ),
-              size: buttonSize,
-              onDown: () =>
-                  onB(true),
-              onUp: () =>
-                  onB(false),
-            ),
-          ),
-
-          // A
-          Positioned(
-            left:
-                center - buttonSize / 2,
-            bottom: 0,
-            child: _FaceButton(
-              label: 'A',
-              color: const Color(
-                0xFF43C95A,
-              ),
-              size: buttonSize,
-              onDown: () =>
-                  onA(true),
-              onUp: () =>
-                  onA(false),
-            ),
-          ),
-
-          // X
-          Positioned(
-            left: 0,
-            top:
-                center - buttonSize / 2,
-            child: _FaceButton(
-              label: 'X',
-              color: const Color(
-                0xFF2796E8,
-              ),
-              size: buttonSize,
-              onDown: () =>
-                  onX(true),
-              onUp: () =>
-                  onX(false),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -1882,11 +2105,9 @@ class _SettingsSection
                   FontWeight.w700,
             ),
           ),
-
           const SizedBox(
             height: 12,
           ),
-
           child,
         ],
       ),
@@ -1990,7 +2211,6 @@ class _SettingInfoRow
               ),
             ),
           ),
-
           Text(
             value,
             style:

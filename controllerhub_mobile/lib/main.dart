@@ -10,37 +10,28 @@ Future<void> main() async {
   );
 }
 
-class ControllerHubApp
-    extends StatelessWidget {
+class ControllerHubApp extends StatelessWidget {
   const ControllerHubApp({
     super.key,
   });
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'ControllerHub',
       theme: ThemeData(
-        brightness:
-            Brightness.dark,
+        brightness: Brightness.dark,
         useMaterial3: true,
         scaffoldBackgroundColor:
-            const Color(
-          0xFF0D0F14,
-        ),
+            const Color(0xFF0D0F14),
         colorScheme:
             ColorScheme.fromSeed(
-          seedColor:
-              Colors.blue,
-          brightness:
-              Brightness.dark,
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
         ),
       ),
-      home:
-          const HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }
